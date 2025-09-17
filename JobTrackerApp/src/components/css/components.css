@@ -1,0 +1,53 @@
+header {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 2px solid white;
+    padding-bottom: 30px;
+}
+
+.title {
+    margin-left: 50px;
+}
+
+.account-buttons{
+    display: flex;
+    align-items: center;
+    margin-right: 100px;
+    gap: 5px;
+}
+
+/* HEADER CSS^^ */
+
+#add-job{
+    display: flex;
+    justify-content: center;
+    margin-top: 50px;
+}
+
+#add-job-button{
+    width: 200px;
+    height: 75px;
+}
+
+/* ADD-JOB-BUTTON-CSS */
+
+.table-container{
+    display: flex;
+    justify-content: center;
+    margin-top: 50px;
+}
+
+.job-table{
+    border: 2px solid white;
+    width: 1200px;
+    height: 100px;
+    text-align: center;
+}
+
+th {
+    border-bottom: 2px solid white;
+    border-top: 2px solid white;
+}
+td {
+    border-bottom: 2px solid white;
+}
