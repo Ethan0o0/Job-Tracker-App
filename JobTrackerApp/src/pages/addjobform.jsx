@@ -4,14 +4,14 @@ export default function AddJobForm(props){
     return(
         <div className='modal-overlay' onClick={props.btnHandler}>
             <div className='modal-content' onClick={(e) => e.stopPropagation()}>
-                <form action="" className="addjob-form">
+                <form action="" className="addjob-form" onSubmit={props.submit}>
                     <div>
                         <label htmlFor="company">Company Name</label><br />
                         <input type="text" id="company" name="company" />
                     </div>
                     <div>
-                        <label htmlFor="job-title">Job Title</label><br />
-                        <input type="text" id="job-title" name="job-title"/>
+                        <label htmlFor="job_title">Job Title</label><br />
+                        <input type="text" id="job_title" name="job_title"/>
                     </div>
                     <div>
                         <select name="status" id="status">

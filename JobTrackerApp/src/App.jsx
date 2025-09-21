@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import './components/css/main.css'
 import './components/css/components.css'
 import {HashRouter as Router, Routes, Route} from 'react-router-dom'
@@ -14,7 +14,35 @@ function App() {
 
   function handlePopUp(){
     setIsPopUp( (bool) => !bool);
-    // console.log(isPopUp)
+  }
+
+  //sending the formdata to the backend
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    const formData = new FormData(event.target);
+    const objectFormData = Object.fromEntries(formData.entries())
+
+    try {
+      const response = await fetch('/jobs', {
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(objectFormData)
+      })
+
+      if (!response.ok){
+        throw new Error('HTTP error')
+      }
+
+      const result = await response.json();
+      console.log('Success:', result);
+      setIsPopUp(false)
+    }
+    catch(e){
+      console.log(`Error:`, e);
+    }
+
   }
 
 
@@ -29,7 +57,7 @@ function App() {
           </Route>
         </Routes>
       </Router>
-      {isPopUp && <AddJobForm isOpen={isPopUp} btnHandler={handlePopUp}/>}
+      {isPopUp && <AddJobForm isOpen={isPopUp} btnHandler={handlePopUp} submit={handleSubmit}/>}
     </>
   )
 }
