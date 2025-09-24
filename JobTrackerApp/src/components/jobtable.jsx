@@ -1,4 +1,25 @@
-export default function JobTable(){
+export default function JobTable(props){
+
+
+    const jobData = props.jobs.map( (job) => {
+        return(
+            <tr key={job.id}>
+                <td>{job.company}</td>
+                <td>{job.job_title}</td>
+                <td><select name="status" id="status" defaultValue={job.status} onChange={ (e) => props.status(job, e.target.value)}>
+                        <option value="applied">Applied</option>
+                        <option value="interview">Interview</option>
+                        <option value="offer">Offer</option>
+                        <option value="rejected">Rejected</option>
+                    </select>
+                </td>
+                <td>{job.date}</td>
+                <td>{job.notes}</td>
+                <td><button onClick={(e) => props.delete(job.id)}>delete</button></td>
+            </tr>
+        )
+    })
+
     return(
         <div className="table-container">
             <table className="job-table">
@@ -13,20 +34,7 @@ export default function JobTable(){
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>TestCompany</td>
-                        <td>FakeEngineer</td>
-                        <td><select name="status" id="status">
-                                <option value="applied">Applied</option>
-                                <option value="interview">Interview</option>
-                                <option value="offer">Offer</option>
-                                <option value="rejected">Rejected</option>
-                            </select>
-                        </td>
-                        <td>09/16/2025</td>
-                        <td>test notes to put onto here</td>
-                        <td><button>delete</button></td>
-                    </tr>
+                    {jobData}
                 </tbody>
             </table>
         </div>

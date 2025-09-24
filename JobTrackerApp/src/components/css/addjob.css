@@ -1,3 +1,15 @@
+#add-job {
+  display: flex;
+}
+
+#filter-options {
+  margin-left: 100px;
+  width: 100px;
+  height: 20px;
+  text-align: center;
+}
+
+
 /* Overlay that darkens background */
 .modal-overlay {
     position: fixed;
