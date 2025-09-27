@@ -57,7 +57,9 @@ function App() {
     console.log("Reached Logout function")
 
     try {
-      const response = await fetch('https://job-tracker-app-72g4.onrender.com/logout');
+      const response = await fetch('https://job-tracker-app-72g4.onrender.com/logout', {
+        credentials: 'include'
+      });
       if (!response.ok){
         throw new Error("HTTP Error! Status is", response.status)
       }
@@ -88,7 +90,9 @@ function App() {
       // console.log("GOT INTO FETCH JOBS")
 
       if (filterOption && filterOption !== 'all'){
-        const response = await fetch(`https://job-tracker-app-72g4.onrender.com/jobs/${filterOption}/${userData.id}`);
+        const response = await fetch(`https://job-tracker-app-72g4.onrender.com/jobs/${filterOption}/${userData.id}`, {
+          credentials: 'include'
+        });
         if (!response.ok){
           throw new Error("HTTP Error! Status is", response.status)
         }
@@ -97,7 +101,9 @@ function App() {
       }
       else {
 
-        const response = await fetch(`https://job-tracker-app-72g4.onrender.com/jobs/${userData.id}`);
+        const response = await fetch(`https://job-tracker-app-72g4.onrender.com/jobs/${userData.id}`, {
+          credentials: 'include'
+        });
         if (!response.ok){
           throw new Error("HTTP Error! Status is", response.status)
         }
@@ -121,6 +127,7 @@ function App() {
     try {
       const response = await fetch('https://job-tracker-app-72g4.onrender.com/jobs', {
         method: 'POST',
+        credentials: 'include',
         headers: {
           "Content-Type": "application/json"
         },
@@ -148,6 +155,7 @@ function App() {
     try {
       const response = await fetch(`https://job-tracker-app-72g4.onrender.com/jobs/${data.id}`, {
         method: 'PUT',
+        credentials: 'include',
         headers: {
           "Content-Type": "application/json",
         },
@@ -172,6 +180,7 @@ function App() {
       console.log(currId)
       const response = await fetch(`https://job-tracker-app-72g4.onrender.com/jobs/${currId}`, {
         method: 'DELETE',
+        credentials: 'include'
       })
 
       if (!response.ok){
