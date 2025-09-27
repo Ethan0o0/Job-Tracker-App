@@ -231,7 +231,7 @@ function App() {
     const loginData = {email, password}
 
     try {
-      const response = await fetch('/login', {
+      const response = await fetch('https://job-tracker-app-72g4.onrender.com/login', {
         method: 'POST',
         headers: {
           "Content-Type": "application/json",
