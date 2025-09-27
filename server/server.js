@@ -15,7 +15,7 @@ const app = express();
 const PORT = 5020;
 
 app.use(cors({
-    origin: 'https://job-tracker-app-72g4.onrender.com', 
+    origin: 'https://job-tracker-app-one.vercel.app', 
     credentials: true, 
   }));
 
