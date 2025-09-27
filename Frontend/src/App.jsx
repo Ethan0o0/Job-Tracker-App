@@ -62,6 +62,8 @@ function App() {
       const result = await response.json()
       setLoggedIn(false);
       navigate('/')
+      setJobData([])
+
     }
     catch(e){
       console.log("Could not logout due to error", e);
