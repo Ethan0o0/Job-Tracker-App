@@ -15,7 +15,7 @@ const app = express();
 const PORT = 5020;
 
 app.use(cors({
-    origin: 'http://localhost:5173', 
+    origin: 'https://job-tracker-app-72g4.onrender.com', 
     credentials: true, 
   }));
 
