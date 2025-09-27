@@ -7,13 +7,13 @@ export default defineConfig({
   server: {
     proxy: {
       '/jobs' : {
-        target: 'http://localhost:5020',
+        target: 'https://job-tracker-app-72g4.onrender.com',
         rewrite: path => path.replace(/^\/jobs/, '/jobs')
       },
-      '/signup' : 'http://localhost:5020',
-      '/login' : 'http://localhost:5020',
-      '/logout' : 'http://localhost:5020',
-      '/me' : 'http://localhost:5020'
+      '/signup' : 'https://job-tracker-app-72g4.onrender.com',
+      '/login' : 'https://job-tracker-app-72g4.onrender.com',
+      '/logout' : 'https://job-tracker-app-72g4.onrender.com',
+      '/me' : 'https://job-tracker-app-72g4.onrender.com'
     }
   }
 })
