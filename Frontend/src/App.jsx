@@ -36,7 +36,9 @@ function App() {
 
   async function isLoggedIn(){
     try{
-      const response = await fetch('https://job-tracker-app-72g4.onrender.com/me')
+      const response = await fetch('https://job-tracker-app-72g4.onrender.com/me', {
+        credentials: 'include'
+      })
       if (!response.ok){
         throw new Error("HTTP Error! Status is", response.status)
       }
