@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import './components/css/main.css'
 import './components/css/components.css'
-import {HashRouter as Router, Routes, Route} from 'react-router-dom'
+import {HashRouter as Router, Routes, Route, useNavigate} from 'react-router-dom'
 import Header from './components/header.jsx'
 import MainPage from './pages/mainpage.jsx'
 import SignUp from './pages/signuppage.jsx'
@@ -12,22 +12,79 @@ function App() {
 
   const [isPopUp, setIsPopUp] = useState(false);
   const [jobData, setJobData] = useState([]);
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [userData, setUserData] = useState({});
+  const [getJobsState, setGetJobsState] = useState(0);
+
+  const navigate = useNavigate();
 
   function handlePopUp(){
     setIsPopUp( (bool) => !bool);
   }
 
+  useEffect(() => {
+    isLoggedIn();
+  }, [])
+
   //getting data from database
   useEffect( () => {
-    fetchJobs();
-  }, [])
+    if (loggedIn){
+      fetchJobs();
+    }
+  }, [loggedIn, getJobsState])
+
+
+  async function isLoggedIn(){
+    try{
+      const response = await fetch('/me')
+      if (!response.ok){
+        throw new Error("HTTP Error! Status is", response.status)
+      }
+      const result = await response.json()
+      if (result){
+        setUserData(result);
+        setLoggedIn(true);
+      }
+    }
+    catch(e){
+      console.log("Error caught for useEffect Login", e)
+    }
+  }
+
+  async function handleLogOut(){
+    console.log("Reached Logout function")
+
+    try {
+      const response = await fetch('/logout');
+      if (!response.ok){
+        throw new Error("HTTP Error! Status is", response.status)
+      }
+      const result = await response.json()
+      setLoggedIn(false);
+      navigate('/')
+    }
+    catch(e){
+      console.log("Could not logout due to error", e);
+    }
+  }
 
   const fetchJobs = async (filterOption) => {
 
+    // console.log("CHECKING FOR FETCHJOBS")
+    console.log(loggedIn)
+
+    if (!loggedIn){
+      return;
+    }
+
+    console.log("GOT INTO FETCH JOBS FIRST PART")
+
     try{
 
+      // console.log("GOT INTO FETCH JOBS")
+
       if (filterOption && filterOption !== 'all'){
-        const response = await fetch(`/jobs/${filterOption}`);
+        const response = await fetch(`/jobs/${filterOption}/${userData.id}`);
         if (!response.ok){
           throw new Error("HTTP Error! Status is", response.status)
         }
@@ -35,7 +92,8 @@ function App() {
         setJobData(result)
       }
       else {
-        const response = await fetch('/jobs');
+
+        const response = await fetch(`/jobs/${userData.id}`);
         if (!response.ok){
           throw new Error("HTTP Error! Status is", response.status)
         }
@@ -48,29 +106,13 @@ function App() {
     }
   }
 
-  // async function handleFilter(filterOption){
-  //   try {
-  //     const response = await fetch(`/jobs/${filterOption}`, {
-  //       method: 'POST'
-  //     })
-  //     if (!response.ok){
-  //       throw new Error('HTTP ERROR')
-  //     }
-  //     const result = await response.json();
-  //     console.log("Successfully Filtered", result);
-  //     await fetchJobs();
-  //   }
-  //   catch (e){
-  //     console.log('Error recieved:', e)
-  //   }
-  // }
-
 
   //sending the formdata to the backend
   const handleSubmit = async (event) => {
     event.preventDefault();
     const formData = new FormData(event.target);
     const objectFormData = Object.fromEntries(formData.entries())
+    objectFormData.user_id = userData.id;
 
     try {
       const response = await fetch('/jobs', {
@@ -88,6 +130,7 @@ function App() {
       const result = await response.json();
       console.log('Success:', result);
       setIsPopUp(false)
+      setGetJobsState( (num) => num + 1);
       await fetchJobs()
     }
     catch(e){
@@ -142,24 +185,102 @@ function App() {
     }
   }
 
+  //for handling signup info
+  const handleSignup = async (event) => {
+    event.preventDefault();
+    const formData = new FormData(event.target);
+    const objectFormData = Object.fromEntries(formData.entries())
+    const {name, email, password, confirmPassword} = objectFormData;
+    const signUpData = {name, email, password};
+
+    if (password !== confirmPassword) {
+      alert("Passwords do not match!");
+      return; // stop execution
+    }
+
+    try {
+      const response = await fetch('/signup', {
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json"
+        },
+        credentials: 'include',
+        body: JSON.stringify(signUpData)
+      })
+
+      if (!response.ok){
+        throw new Error('HTTP error')
+      }
+
+      const result = await response.json();
+      console.log('Success in signing up:', result);
+      navigate('/login')
+
+    }
+    catch(e){
+      console.log(`Error:`, e);
+    }
+
+  }
+
+  const handleSignIn = async (event) => {
+    event.preventDefault();
+    const formData = new FormData(event.target);
+    const objectFormData = Object.fromEntries(formData.entries())
+    const {email, password} = objectFormData;
+    const loginData = {email, password}
+
+    try {
+      const response = await fetch('/login', {
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: 'include',
+        body: JSON.stringify(loginData)
+      })
+
+      if (!response.ok){
+        throw new Error('HTTP error')
+      }
+
+      const result = await response.json();
+      if (!result){
+        alert("Invalid Login");
+        return;
+      }
+      //change the frontend to list the name and values
+      // console.log(result)
+      setUserData(result);
+      setLoggedIn(true);
+      navigate('/')
+      await fetchJobs();
+
+    }
+    catch (e){
+      console.log("Error caught: ", e);
+    }
+  }
+
+
+
   return(
     <>
-      <Router>
-        <Routes>
-          <Route element={<Header />}>
-            <Route path='/' element={<MainPage 
-              addJobBtn={handlePopUp}
-              jobs={jobData}
-              status={updateStatus}
-              delete={deleteJob}
-              filter={fetchJobs}
-            />}/>
-            <Route path='/signup' element={<SignUp />}/>
-            <Route path='/login' element={<LoginPage />}/>
-          </Route>
-        </Routes>
-      </Router>
-      {isPopUp && <AddJobForm isOpen={isPopUp} btnHandler={handlePopUp} submit={handleSubmit}/>}
+      <Routes>
+        <Route element={<Header isLoggedIn={loggedIn} user={userData.name} logOut={handleLogOut}/>}>
+          <Route path='/' element={<MainPage 
+            addJobBtn={handlePopUp}
+            jobs={jobData}
+            status={updateStatus}
+            delete={deleteJob}
+            filter={fetchJobs}
+            isLoggedIn={loggedIn}
+          />}/>
+          <Route path='/signup' element={<SignUp submit={handleSignup}/>}/>
+          <Route path='/login' element={<LoginPage submit={handleSignIn} />}/>
+        </Route>
+      </Routes>
+    {isPopUp && <AddJobForm isOpen={isPopUp} btnHandler={handlePopUp} submit={handleSubmit}/>}
     </>
   )
 }
