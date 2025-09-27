@@ -36,7 +36,7 @@ function App() {
 
   async function isLoggedIn(){
     try{
-      const response = await fetch('/me')
+      const response = await fetch('https://job-tracker-app-72g4.onrender.com/me')
       if (!response.ok){
         throw new Error("HTTP Error! Status is", response.status)
       }
@@ -55,7 +55,7 @@ function App() {
     console.log("Reached Logout function")
 
     try {
-      const response = await fetch('/logout');
+      const response = await fetch('https://job-tracker-app-72g4.onrender.com/logout');
       if (!response.ok){
         throw new Error("HTTP Error! Status is", response.status)
       }
@@ -84,7 +84,7 @@ function App() {
       // console.log("GOT INTO FETCH JOBS")
 
       if (filterOption && filterOption !== 'all'){
-        const response = await fetch(`/jobs/${filterOption}/${userData.id}`);
+        const response = await fetch(`https://job-tracker-app-72g4.onrender.com/jobs/${filterOption}/${userData.id}`);
         if (!response.ok){
           throw new Error("HTTP Error! Status is", response.status)
         }
@@ -93,7 +93,7 @@ function App() {
       }
       else {
 
-        const response = await fetch(`/jobs/${userData.id}`);
+        const response = await fetch(`https://job-tracker-app-72g4.onrender.com/jobs/${userData.id}`);
         if (!response.ok){
           throw new Error("HTTP Error! Status is", response.status)
         }
@@ -115,7 +115,7 @@ function App() {
     objectFormData.user_id = userData.id;
 
     try {
-      const response = await fetch('/jobs', {
+      const response = await fetch('https://job-tracker-app-72g4.onrender.com/jobs', {
         method: 'POST',
         headers: {
           "Content-Type": "application/json"
@@ -142,7 +142,7 @@ function App() {
   //updating status
   async function updateStatus(data, currStatus){
     try {
-      const response = await fetch(`/jobs/${data.id}`, {
+      const response = await fetch(`https://job-tracker-app-72g4.onrender.com/jobs/${data.id}`, {
         method: 'PUT',
         headers: {
           "Content-Type": "application/json",
@@ -166,7 +166,7 @@ function App() {
   async function deleteJob(currId){
     try {
       console.log(currId)
-      const response = await fetch(`/jobs/${currId}`, {
+      const response = await fetch(`https://job-tracker-app-72g4.onrender.com/jobs/${currId}`, {
         method: 'DELETE',
       })
 
@@ -199,7 +199,7 @@ function App() {
     }
 
     try {
-      const response = await fetch('/signup', {
+      const response = await fetch('https://job-tracker-app-72g4.onrender.com/signup', {
         method: 'POST',
         headers: {
           "Content-Type": "application/json"
