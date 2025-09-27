@@ -41,7 +41,7 @@ function App() {
         throw new Error("HTTP Error! Status is", response.status)
       }
       const result = await response.json()
-      if (result){
+      if (result && result.id){
         setUserData(result);
         setLoggedIn(true);
       }

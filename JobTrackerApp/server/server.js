@@ -73,7 +73,7 @@ app.get('/me', (req, res) => {
         res.json({id: req.session.user_id, name: req.session.name})
     }
     else{
-        res.json(null);
+        res.json({user: null});
     }
 })
 
