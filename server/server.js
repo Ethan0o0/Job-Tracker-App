@@ -9,9 +9,15 @@ import checkUsers from './checkUsers.js';
 import session from 'express-session'
 import dotenv from 'dotenv';
 dotenv.config();
+import cors from 'cors'
 
 const app = express();
 const PORT = 5020;
+
+app.use(cors({
+    origin: '*', 
+    credentials: true, 
+  }));
 
 app.use(express.json());
 

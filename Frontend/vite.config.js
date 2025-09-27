@@ -11,7 +11,11 @@ export default defineConfig({
         rewrite: path => path.replace(/^\/jobs/, '/jobs')
       },
       '/signup' : 'https://job-tracker-app-72g4.onrender.com',
-      '/login' : 'https://job-tracker-app-72g4.onrender.com',
+      '/login' : {
+        target: 'https://job-tracker-app-72g4.onrender.com',
+        changeOrigin: true,
+        rewrite: path => path.replace(/^\/login/, '/login')
+      },
       '/logout' : 'https://job-tracker-app-72g4.onrender.com',
       '/me' : 'https://job-tracker-app-72g4.onrender.com'
     }
