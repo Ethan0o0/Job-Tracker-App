@@ -6,10 +6,11 @@ import deleteJob from './deleteJob.js';
 import getJobsByFilter from './getJobsByFilter.js';
 import addUser from './addUser.js';
 import checkUsers from './checkUsers.js';
-import session from 'express-session'
 import dotenv from 'dotenv';
 dotenv.config();
 import cors from 'cors'
+import jwt from 'jsonwebtoken'
+import authenticateToken from './authenticate_token.js';
 
 const app = express();
 const PORT = 5020;
@@ -21,40 +22,29 @@ app.use(cors({
 
 app.use(express.json());
 
-app.use(session({
-    secret: process.env.SECRET,
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-        httpOnly: true,
-        secure: true,
-        sameSite: 'none'
-    }
-}))
-
-app.post('/jobs', (req, res) => {
+app.post('/jobs', authenticateToken, (req, res) => {
     //req.body will hold the form data
     addJob(req);
     res.status(200).json({message: "Successfully grabbed form data and sent it to db"})
 })
 
-app.get('/jobs/:id', async (req, res) => {
+app.get('/jobs', authenticateToken, async (req, res) => {
     const data = await getJobs(req);
     // console.log(data);
     res.status(200).json(data)
 })
 
-app.get('/jobs/:filter/:id', async (req, res) => {
+app.get('/jobs/:filter', authenticateToken, async (req, res) => {
     const data = await getJobsByFilter(req);
     res.status(200).json(data)
 })
 
-app.put('/jobs/:id', (req, res) =>{
+app.put('/jobs/:id', authenticateToken, (req, res) =>{
     updateStatus(req)
     res.status(200).json({message: "Successfully updated data and sent it to db"})
 })
 
-app.delete('/jobs/:id', (req, res) => {
+app.delete('/jobs/:id', authenticateToken, (req, res) => {
     deleteJob(req)
     res.status(200).json({message: "Successfully deleted"})
 })
@@ -65,22 +55,21 @@ app.post('/signup', (req, res) => {
 })
 
 app.get('/logout', (req, res) => {
-    req.session.destroy();
+    // req.session.destroy();
     res.json({message: "Logged Out"})
 })
 
 app.post('/login', async (req, res) => {
     const isValidUser = await checkUsers(req);
+    if (isValidUser){
+        const token = jwt.sign({id: isValidUser.id, name: isValidUser.name}, process.env.SECRET, {expiresIn: '1h'})
+        return res.status(200).json({name: isValidUser.name, token: token})
+    }
     res.status(200).json(isValidUser);
 })
 
-app.get('/me', (req, res) => {
-    if (req.session.user_id){
-        res.json({id: req.session.user_id, name: req.session.name})
-    }
-    else{
-        res.json({user: null});
-    }
+app.get('/me', authenticateToken, (req, res) => {
+    res.json({name: req.user.name})
 })
 
 

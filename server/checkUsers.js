@@ -23,8 +23,8 @@ export default async function checkUsers(req){
         return false;
     }
 
-    req.session.user_id = userInfo.id;
-    req.session.name = userInfo.name;
+    // req.session.user_id = userInfo.id;
+    // req.session.name = userInfo.name;
 
     return userInfo;
 

@@ -3,7 +3,7 @@ import supabase from "./supabase-client.js";
 export default async function getJobsByFilter(req){
 
     const filter = req.params.filter;
-    const id = req.params.id;
+    const id = req.user.id;
 
     // console.log(filter, id, "DATA IS HERE")
     // console.log("REACHED FILTER")

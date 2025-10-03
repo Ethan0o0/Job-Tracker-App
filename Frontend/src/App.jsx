@@ -13,7 +13,7 @@ function App() {
   const [isPopUp, setIsPopUp] = useState(false);
   const [jobData, setJobData] = useState([]);
   const [loggedIn, setLoggedIn] = useState(false);
-  const [userData, setUserData] = useState({});
+  const [userData, setUserData] = useState("");
   const [getJobsState, setGetJobsState] = useState(0);
 
   const navigate = useNavigate();
@@ -23,7 +23,9 @@ function App() {
   }
 
   useEffect(() => {
-    isLoggedIn();
+    if (localStorage.getItem('token')){
+      isLoggedIn();
+    }
   }, [])
 
   //getting data from database
@@ -37,16 +39,18 @@ function App() {
   async function isLoggedIn(){
     try{
       const response = await fetch('https://job-tracker-app-72g4.onrender.com/me', {
+        headers: {'access-token': localStorage.getItem('token')},
         credentials: 'include'
       })
       if (!response.ok){
         throw new Error("HTTP Error! Status is", response.status)
       }
       const result = await response.json()
-      if (result && result.id){
-        setUserData(result);
+      if (result.name){
+        setUserData(result.name);
         setLoggedIn(true);
       }
+      return;
     }
     catch(e){
       console.log("Error caught for useEffect Login", e)
@@ -54,7 +58,8 @@ function App() {
   }
 
   async function handleLogOut(){
-    console.log("Reached Logout function")
+    // console.log("Reached Logout function")
+    localStorage.removeItem('token');
 
     try {
       const response = await fetch('https://job-tracker-app-72g4.onrender.com/logout', {
@@ -76,21 +81,15 @@ function App() {
 
   const fetchJobs = async (filterOption) => {
 
-    // console.log("CHECKING FOR FETCHJOBS")
-    console.log(loggedIn)
-
     if (!loggedIn){
       return;
     }
 
-    console.log("GOT INTO FETCH JOBS FIRST PART")
-
     try{
 
-      // console.log("GOT INTO FETCH JOBS")
-
       if (filterOption && filterOption !== 'all'){
-        const response = await fetch(`https://job-tracker-app-72g4.onrender.com/jobs/${filterOption}/${userData.id}`, {
+        const response = await fetch(`https://job-tracker-app-72g4.onrender.com/jobs/${filterOption}`, {
+          headers: {'access-token': localStorage.getItem('token')},
           credentials: 'include'
         });
         if (!response.ok){
@@ -101,7 +100,8 @@ function App() {
       }
       else {
 
-        const response = await fetch(`https://job-tracker-app-72g4.onrender.com/jobs/${userData.id}`, {
+        const response = await fetch(`https://job-tracker-app-72g4.onrender.com/jobs`, {
+          headers: {'access-token': localStorage.getItem('token')},
           credentials: 'include'
         });
         if (!response.ok){
@@ -122,14 +122,14 @@ function App() {
     event.preventDefault();
     const formData = new FormData(event.target);
     const objectFormData = Object.fromEntries(formData.entries())
-    objectFormData.user_id = userData.id;
 
     try {
       const response = await fetch('https://job-tracker-app-72g4.onrender.com/jobs', {
         method: 'POST',
         credentials: 'include',
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          'access-token': localStorage.getItem('token')
         },
         body: JSON.stringify(objectFormData)
       })
@@ -158,6 +158,7 @@ function App() {
         credentials: 'include',
         headers: {
           "Content-Type": "application/json",
+          'access-token': localStorage.getItem('token')
         },
         body: JSON.stringify({...data, status: currStatus})
       })
@@ -179,6 +180,7 @@ function App() {
     try {
       console.log(currId)
       const response = await fetch(`https://job-tracker-app-72g4.onrender.com/jobs/${currId}`, {
+        headers: {'access-token': localStorage.getItem('token')},
         method: 'DELETE',
         credentials: 'include'
       })
@@ -263,8 +265,8 @@ function App() {
         return;
       }
       //change the frontend to list the name and values
-      // console.log(result)
-      setUserData(result);
+      setUserData(result.name);
+      localStorage.setItem('token', result.token)
       setLoggedIn(true);
       navigate('/')
       await fetchJobs();
@@ -280,7 +282,7 @@ function App() {
   return(
     <>
       <Routes>
-        <Route element={<Header isLoggedIn={loggedIn} user={userData.name} logOut={handleLogOut}/>}>
+        <Route element={<Header isLoggedIn={loggedIn} user={userData} logOut={handleLogOut}/>}>
           <Route path='/' element={<MainPage 
             addJobBtn={handlePopUp}
             jobs={jobData}
